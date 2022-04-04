@@ -32,10 +32,5 @@ public class BinaryTreeNode<E> {
 		this.rightChild = rightChild;
 	}
 
-	public int getHeight() {
-		if (leftChild == null && rightChild == null) {
-			return 0;
-		}
-		return (Math.max((leftChild == null) ? 0 : leftChild.getHeight(), (rightChild == null) ? 0 : rightChild.getHeight())) + 1;
-	}
+
 }

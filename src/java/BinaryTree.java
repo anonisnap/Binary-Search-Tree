@@ -15,8 +15,15 @@ public class BinaryTree<E> {
 	}
 
 	public int getSize() {
-		size = inOrder().size();
+		size = sizeFromNode(root);
 		return size;
+	}
+
+	private int sizeFromNode(BinaryTreeNode<E> node) {
+		if (node == null) {
+			return 0;
+		}
+		return 1 + sizeFromNode(node.getLeftChild()) + sizeFromNode(node.getRightChild());
 	}
 
 	public boolean isEmpty() {
@@ -24,34 +31,87 @@ public class BinaryTree<E> {
 	}
 
 	public boolean contains(E element) {
-		return inOrder().contains(element);
+		return containsNode(root, element);
+	}
+
+	private boolean containsNode(BinaryTreeNode<E> node, E element) {
+		if (node == null) {
+			return false;
+		}
+		return node.getElement()
+		           .equals(element) || containsNode(node.getLeftChild(), element) || containsNode(node.getRightChild(), element);
 	}
 
 	public ArrayList<E> inOrder() {
-		ArrayList<E> inOrderList = new ArrayList<>();
-		// TODO
-		return null;
+		ArrayList<E> l = new ArrayList<>();
+		traverse("in", l, root);
+		return l;
 	}
 
 	public ArrayList<E> preOrder() {
-		ArrayList<E> preOrderList = new ArrayList<>();
-		// TODO
-		return null;
+		ArrayList<E> l = new ArrayList<>();
+		traverse("pre", l, root);
+		return l;
 	}
 
 	public ArrayList<E> postOrder() {
-		ArrayList<E> postOrderList = new ArrayList<>();
-		// TODO
-		return null;
+		ArrayList<E> l = new ArrayList<>();
+		traverse("post", l, root);
+		return l;
 	}
 
 	public ArrayList<E> levelOrder() {
-		ArrayList<E> levelOrderList = new ArrayList<>();
-		// TODO
-		return null;
+		ArrayList<E> l = new ArrayList<>();
+
+		for (int i = 0; i < getHeight(); i++) {
+			levelOrderAddToList(l, root, i);
+		}
+
+		return l;
+	}
+
+	private void levelOrderAddToList(ArrayList<E> list, BinaryTreeNode<E> node, int level) {
+		if (node == null) {
+			return;
+		}
+		if (level == 1) {
+			list.add(node.getElement());
+		} else if (level > 1) {
+			levelOrderAddToList(list, node.getLeftChild(), level - 1);
+			levelOrderAddToList(list, node.getRightChild(), level - 1);
+		}
+	}
+
+	private void traverse(String order, ArrayList<E> list, BinaryTreeNode<E> node) {
+		if (node == null) {
+			return;
+		}
+		if (order.equals("pre")) {
+			list.add(node.getElement());
+		}
+
+		traverse(order, list, node.getLeftChild());
+
+		if (order.equals("in")) {
+			list.add(node.getElement());
+		}
+
+		traverse(order, list, node.getRightChild());
+
+		if (order.equals("post")) {
+			list.add(node.getElement());
+		}
+
 	}
 
 	public int getHeight() {
-		return root.getHeight();
+		return nodeHeight(root);
+	}
+
+	private int nodeHeight(BinaryTreeNode<E> node) {
+		if (node == null || node.getLeftChild() == null && node.getRightChild() == null) {
+			return 0;
+		}
+		return Math.max(nodeHeight(node.getLeftChild()), nodeHeight(node.getRightChild())) + 1;
 	}
 }
