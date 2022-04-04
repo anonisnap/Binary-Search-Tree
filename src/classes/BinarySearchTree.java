@@ -1,4 +1,4 @@
-package java;
+package classes;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,7 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 	public BinarySearchTree(E rootElement) {
 		super(rootElement);
 		root = new BinarySearchTreeNode<>(rootElement);
+		super.setRoot(root);
 	}
 
 	public boolean insert(E element) {
@@ -19,16 +20,17 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 	}
 
 	private void insertNode(BinaryTreeNode<E> node, E element) {
-		if (node.getElement()
-		        .compareTo(element) > 0) {
+		if (element.compareTo(node.getElement()) > 0) {
 			if (node.getRightChild() == null) {
-				node.addRightChild(new BinarySearchTreeNode<>(element));
+				BinarySearchTreeNode<E> newNode = new BinarySearchTreeNode<>(element);
+				node.addRightChild(newNode);
 			} else {
 				insertNode(node.getRightChild(), element);
 			}
 		} else {
 			if (node.getLeftChild() == null) {
-				node.addLeftChild(new BinarySearchTreeNode<>(element));
+				BinarySearchTreeNode<E> newNode = new BinarySearchTreeNode<>(element);
+				node.addLeftChild(newNode);
 			} else {
 				insertNode(node.getLeftChild(), element);
 			}
@@ -44,11 +46,9 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 	}
 
 	private void removeNode(BinaryTreeNode<E> node, E element) {
-		if (node.getElement()
-		        .compareTo(element) > 0) {
-			if (node.getRightChild()
-			        .getElement()
-			        .compareTo(element) == 0) {
+		if (element.compareTo(node.getElement()) > 0) {
+			if (element.compareTo(node.getRightChild()
+			                          .getElement()) == 0) {
 				BinaryTreeNode<E> tmpLeft = node.getRightChild()
 				                                .getLeftChild();
 				BinaryTreeNode<E> tmpRight = node.getRightChild()
@@ -56,15 +56,19 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 
 				node.addRightChild(null);
 
-				insertNode(node, tmpLeft.getElement());
-				insertNode(node, tmpRight.getElement());
+				if (tmpLeft != null) {
+					insertNode(node, tmpLeft.getElement());
+				}
+				if (tmpRight != null) {
+					insertNode(node, tmpRight.getElement());
+				}
+
 			} else {
 				removeNode(node.getRightChild(), element);
 			}
 		} else {
-			if (node.getLeftChild()
-			        .getElement()
-			        .compareTo(element) == 0) {
+			if (element.compareTo(node.getLeftChild()
+			                          .getElement()) == 0) {
 				BinaryTreeNode<E> tmpLeft = node.getLeftChild()
 				                                .getLeftChild();
 				BinaryTreeNode<E> tmpRight = node.getLeftChild()
@@ -72,8 +76,13 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 
 				node.addLeftChild(null);
 
-				insertNode(node, tmpRight.getElement());
-				insertNode(node, tmpLeft.getElement());
+				if (tmpRight != null) {
+					insertNode(node, tmpRight.getElement());
+				}
+				if (tmpLeft != null) {
+					insertNode(node, tmpLeft.getElement());
+				}
+
 			} else {
 				removeNode(node.getLeftChild(), element);
 			}
@@ -85,7 +94,7 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 	}
 
 	private BinaryTreeNode<E> maxNode(BinaryTreeNode<E> node) {
-		return (node.getRightChild() == null) ? node : minNode(node.getRightChild());
+		return (node.getRightChild() == null) ? node : maxNode(node.getRightChild());
 	}
 
 	public E findMin() {
@@ -104,19 +113,27 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 		if (node == null) {
 			return false;
 		}
-		return node.getElement()
-		           .compareTo(element) == 0 || (node.getElement()
-		                                            .compareTo(element) > 0) ? containsNode(node.getRightChild(), element) : containsNode(
-				node.getLeftChild(),
-				element);
+
+		if (element.compareTo(node.getElement()) == 0) {
+			return true;
+		}
+
+		if (element.compareTo(node.getElement()) > 0) {
+			return containsNode(node.getRightChild(), element);
+		}
+
+		if (element.compareTo(node.getElement()) < 0) {
+			return containsNode(node.getLeftChild(), element);
+		}
+		return false;
 	}
 
 	public void rebalance() {
 		ArrayList<E> inOrderElementList = inOrder();
-		root = (BinarySearchTreeNode<E>) balancedTreeFromArray(inOrderElementList, 0, inOrderElementList.size() - 1);
+		root = balancedTreeFromArray(inOrderElementList, 0, inOrderElementList.size() - 1);
 	}
 
-	private BinaryTreeNode<E> balancedTreeFromArray(ArrayList<E> elementList, int startPoint, int endPoint) {
+	private BinarySearchTreeNode<E> balancedTreeFromArray(ArrayList<E> elementList, int startPoint, int endPoint) {
 		// Credit to ritikranjan12 on leetcode for the "inspiration"
 		if (startPoint > endPoint) {
 			// If you hit this, you may or may not have messed up. Go get some help
@@ -127,7 +144,7 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 		int midPoint = startPoint + (endPoint - startPoint) / 2;
 
 		// Create a new tmp Root element
-		BinaryTreeNode<E> root = new BinaryTreeNode<>(elementList.get(midPoint));
+		BinarySearchTreeNode<E> root = new BinarySearchTreeNode<>(elementList.get(midPoint));
 
 		// Add children to tmp Root
 		root.addLeftChild(balancedTreeFromArray(elementList, startPoint, midPoint - 1));

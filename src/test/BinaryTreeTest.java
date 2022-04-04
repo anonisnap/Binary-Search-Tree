@@ -1,29 +1,30 @@
+import classes.BinarySearchTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import util.BinaryTreePrint;
 
-import java.BinarySearchTree;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class BinaryTreeTest {
-	private static int nodeOne, nodeTwo, nodeThree, nodeFour, nodeFive, nodeFifty;
+	private static int nodeOne, nodeTwo, nodeThree, nodeFour, nodeFive, nodeFifty, nodeHundredAndOne;
 	private static final int RANDOM_NODE_COUNT = 20;
 	private static int[] randomNodes;
 	private static BinarySearchTree<Integer> tree;
 
 	@BeforeEach
 	public void init() {
-		tree = new BinarySearchTree<>(nodeThree);
 		nodeOne = 1;
 		nodeTwo = 2;
 		nodeThree = 3;
 		nodeFour = 4;
 		nodeFive = 5;
 		nodeFifty = 50;
+		nodeHundredAndOne = 101;
+		tree = new BinarySearchTree<>(nodeThree);
 	}
 
 	@BeforeAll
@@ -31,15 +32,13 @@ public class BinaryTreeTest {
 		randomNodes = new int[RANDOM_NODE_COUNT];
 		Random r = new Random();
 		for (int i = 0; i < RANDOM_NODE_COUNT; i++) {
-			randomNodes[i] = r.nextInt(100);
+			randomNodes[i] = 1 + r.nextInt(99);
 		}
 	}
 
 	@Test
 	public void testInsert() {
-		Assertions.assertNull(tree.getRoot());
-		tree.insert(nodeOne);
-		Assertions.assertEquals(nodeOne,
+		Assertions.assertEquals(nodeThree,
 		                        tree.getRoot()
 		                            .getElement());
 		tree.insert(nodeTwo);
@@ -48,22 +47,29 @@ public class BinaryTreeTest {
 
 	@Test
 	public void testAddMultipleNodes() {
-		Assertions.assertNull(tree.getRoot());
-		tree.insert(nodeFifty);
 		for (Integer randomNode : randomNodes) {
 			tree.insert(randomNode);
 		}
-		Assertions.assertEquals(nodeFifty,
+		Assertions.assertEquals(nodeThree,
 		                        tree.getRoot()
 		                            .getElement());
 		BinaryTreePrint.printTree(tree);
 	}
 
 	@Test
+	public void testContainsNode() {
+		tree.insert(nodeOne);
+		tree.insert(nodeFour);
+		tree.insert(nodeFive);
+
+		Assertions.assertTrue(tree.contains(nodeFour));
+	}
+
+	@Test
 	public void testRemoveNode() {
 		tree.insert(nodeOne);
-		tree.insert(nodeThree);
 		tree.insert(nodeTwo);
+		tree.insert(nodeFour);
 		tree.insert(nodeFive);
 
 		BinaryTreePrint.printTree(tree);
@@ -71,7 +77,7 @@ public class BinaryTreeTest {
 
 		System.out.println("\n\n\n\t\t\t\t<!> BEFORE REMOVAL / AFTER REMOVAL <!>");
 		// Verify the node gotten, is the one removed
-		Assertions.assertTrue(tree.removeElement(nodeTwo));
+		Assertions.assertTrue(tree.removeElement(nodeOne));
 
 		// Verify the size of the tree has been reduced
 		Assertions.assertEquals(beforeRemoval - 1, tree.getSize());
@@ -86,7 +92,7 @@ public class BinaryTreeTest {
 
 		int beforeRemoval = tree.getSize();
 
-		Assertions.assertFalse(tree.removeElement(nodeThree));
+		Assertions.assertFalse(tree.removeElement(nodeFour));
 
 		Assertions.assertEquals(beforeRemoval, tree.getSize());
 	}
@@ -95,208 +101,16 @@ public class BinaryTreeTest {
 	public void testGetHeight() {
 		tree.insert(nodeOne);
 		tree.insert(nodeTwo);
-		tree.insert(nodeThree);
 
 		BinaryTreePrint.printTree(tree);
 
-		Assertions.assertEquals(2, tree.getHeight());
-	}
-
-	@Test
-	public void testRebalance_right_right() {
-		// Add a few nodes to the Tree
-		tree.insert(nodeOne);
-		tree.insert(nodeTwo);
-		tree.insert(nodeThree);
-
-		// Trees to check if balance is kept
-		BinarySearchTree<Integer> tree1 = new BinarySearchTree<>(0);
-		BinarySearchTree<Integer> tree2 = new BinarySearchTree<>(0);
-
-		// Ensure the Balance is not yet kept
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
-		Assertions.assertEquals(2, tree1.getHeight() - tree2.getHeight());
-		System.out.println("\n\tBEFORE REBALANCE\n");
-		BinaryTreePrint.printTree(tree);
-
-		// Rebalance the Tree
-		tree.rebalance();
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
-		// Ensure Tree was correctly rebalanced
-		Assertions.assertTrue(tree1.getHeight() - tree2.getHeight() < 2);
-		Assertions.assertTrue(tree1.getHeight() - tree2.getHeight() > -2);
-		System.out.println("\n\tAFTER REBALANCE\n");
-		BinaryTreePrint.printTree(tree);
-
-		// Add a few nodes to the Tree
-		tree.insert(nodeFour);
-		tree.insert(nodeFive);
-
-		// Ensure the Balance is not yet kept
-		Assertions.assertEquals(2, tree1.getHeight() - tree2.getHeight());
-		System.out.println("\n\tBEFORE REBALANCE (MORE NODES)\n");
-		BinaryTreePrint.printTree(tree);
-
-		// Rebalance the Tree
-		tree.rebalance();
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
-		Assertions.assertTrue(tree1.getHeight() - tree2.getHeight() < 2);
-		Assertions.assertTrue(tree1.getHeight() - tree2.getHeight() > -2);
-		System.out.println("\n\tAFTER REBALANCE (MORE NODES)\n");
-		BinaryTreePrint.printTree(tree);
-	}
-
-	@Test
-	public void testRebalance_left_left() {
-		// Add a few nodes to the Tree
-		tree.insert(nodeFive);
-		tree.insert(nodeFour);
-		tree.insert(nodeThree);
-
-		BinarySearchTree<Integer> tree1 = new BinarySearchTree<>(0);
-		BinarySearchTree<Integer> tree2 = new BinarySearchTree<>(0);
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
-		// Ensure the Balance is not yet kept
-		Assertions.assertEquals(-2, tree1.getHeight() - tree2.getHeight());
-		System.out.println("\n\tBEFORE REBALANCE\n");
-		BinaryTreePrint.printTree(tree);
-
-		// Rebalance the Tree
-		tree.rebalance();
-
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
-		// Ensure Tree was correctly rebalanced
-		Assertions.assertTrue(tree1.getHeight() - tree2.getHeight() < 2);
-		Assertions.assertTrue(tree1.getHeight() - tree2.getHeight() > -2);
-		System.out.println("\n\tAFTER REBALANCE\n");
-		BinaryTreePrint.printTree(tree);
-
-		// Add a few nodes to the Tree
-		tree.insert(nodeTwo);
-		tree.insert(nodeOne);
-
-		// Ensure the Balance is not yet kept
-		Assertions.assertEquals(-2, tree1.getHeight() - tree2.getHeight());
-		System.out.println("\n\tBEFORE REBALANCE (MORE NODES)\n");
-		BinaryTreePrint.printTree(tree);
-
-		// Rebalance the Tree
-		tree.rebalance();
-
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
-		Assertions.assertTrue(tree1.getHeight() - tree2.getHeight() < 2);
-		Assertions.assertTrue(tree1.getHeight() - tree2.getHeight() > -2);
-		System.out.println("\n\tAFTER REBALANCE (MORE NODES)\n");
-		BinaryTreePrint.printTree(tree);
-	}
-
-	@Test
-	public void testRebalance_left_right() {
-		// Add a few nodes to the Tree
-		tree.insert(nodeFour);
-		tree.insert(nodeOne);
-		tree.insert(nodeTwo);
-		tree.insert(nodeThree);
-
-		BinarySearchTree<Integer> tree1 = new BinarySearchTree<>(0);
-		BinarySearchTree<Integer> tree2 = new BinarySearchTree<>(0);
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
-		// Ensure the Balance is not yet kept
-		Assertions.assertEquals(-3, tree1.getHeight() - tree2.getHeight());
-		Assertions.assertEquals(2, tree1.getHeight() - tree2.getHeight());
-		System.out.println("\n\tBEFORE REBALANCE\n");
-		BinaryTreePrint.printTree(tree);
-
-		tree.rebalance();
-
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
-		Assertions.assertEquals(1, tree1.getHeight() - tree2.getHeight());
-		Assertions.assertEquals(0, tree2.getHeight());
-		Assertions.assertEquals(-1, tree1.getHeight() - tree2.getHeight());
-
-		System.out.println("\n\tAFTER REBALANCE\n");
-		BinaryTreePrint.printTree(tree);
-	}
-
-	@Test
-	public void testRebalance_right_left() {
-		// Add a few nodes to the Tree
-		tree.insert(nodeOne);
-		tree.insert(nodeFour);
-		tree.insert(nodeThree);
-		tree.insert(nodeTwo);
-
-		BinarySearchTree<Integer> tree1 = new BinarySearchTree<>(0);
-		BinarySearchTree<Integer> tree2 = new BinarySearchTree<>(0);
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
-		// Ensure the Balance is not yet kept
-		Assertions.assertEquals(3, tree1.getHeight() - tree2.getHeight());
-		Assertions.assertEquals(-2, tree1.getHeight() - tree2.getHeight());
-		System.out.println("\n\tBEFORE REBALANCE\n");
-		BinaryTreePrint.printTree(tree);
-
-		tree.rebalance();
-
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
-		Assertions.assertEquals(-1, tree1.getHeight() - tree2.getHeight());
-		Assertions.assertEquals(0, tree1.getHeight());
-		Assertions.assertEquals(1, tree1.getHeight() - tree2.getHeight());
-
-		System.out.println("\n\tAFTER REBALANCE\n");
-		BinaryTreePrint.printTree(tree);
+		Assertions.assertEquals(3, tree.getHeight());
 	}
 
 	@Test
 	public void testLargeTreeFullTest() {
 		// Add Root Node
 		tree.insert(nodeFifty);
-
-		BinarySearchTree<Integer> tree1 = new BinarySearchTree<>(0);
-		BinarySearchTree<Integer> tree2 = new BinarySearchTree<>(0);
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
 
 		// Add random nodes
 		for (int node : randomNodes) {
@@ -309,16 +123,8 @@ public class BinaryTreeTest {
 		// Rebalance Nodes
 		tree.rebalance();
 
-		tree1.setRoot(tree.getRoot()
-		                  .getRightChild());
-		tree2.setRoot(tree.getRoot()
-		                  .getLeftChild());
-
 		System.out.println("\n\tAFTER REBALANCE\n");
 		BinaryTreePrint.printTree(tree);
-
-		Assertions.assertTrue(tree1.getHeight() - tree2.getHeight() > -2);
-		Assertions.assertTrue(tree1.getHeight() - tree2.getHeight() < 2);
 	}
 
 	@Test
@@ -329,16 +135,15 @@ public class BinaryTreeTest {
 		tree.insert(nodeOne);
 		tree.insert(nodeTwo);
 		tree.insert(nodeFifty);
-		tree.insert(nodeThree);
 		tree.insert(nodeFive);
 
 		List<Integer> expectedList = new ArrayList<>();
 
-		expectedList.add(nodeFour);
+		expectedList.add(nodeThree);
 		expectedList.add(nodeOne);
 		expectedList.add(nodeTwo);
+		expectedList.add(nodeFour);
 		expectedList.add(nodeFifty);
-		expectedList.add(nodeThree);
 		expectedList.add(nodeFive);
 
 		BinaryTreePrint.printTree(tree);
@@ -357,7 +162,6 @@ public class BinaryTreeTest {
 		tree.insert(nodeOne);
 		tree.insert(nodeTwo);
 		tree.insert(nodeFifty);
-		tree.insert(nodeThree);
 		tree.insert(nodeFive);
 
 		List<Integer> expectedList = new ArrayList<>();
@@ -385,17 +189,16 @@ public class BinaryTreeTest {
 		tree.insert(nodeOne);
 		tree.insert(nodeTwo);
 		tree.insert(nodeFifty);
-		tree.insert(nodeThree);
 		tree.insert(nodeFive);
 
 		List<Integer> expectedList = new ArrayList<>();
 
-		expectedList.add(nodeThree);
 		expectedList.add(nodeTwo);
 		expectedList.add(nodeOne);
 		expectedList.add(nodeFive);
 		expectedList.add(nodeFifty);
 		expectedList.add(nodeFour);
+		expectedList.add(nodeThree);
 
 		BinaryTreePrint.printTree(tree);
 
@@ -413,16 +216,15 @@ public class BinaryTreeTest {
 		tree.insert(nodeOne);
 		tree.insert(nodeTwo);
 		tree.insert(nodeFifty);
-		tree.insert(nodeThree);
 		tree.insert(nodeFive);
 
 		List<Integer> expectedList = new ArrayList<>();
 
-		expectedList.add(nodeFour);
-		expectedList.add(nodeOne);
-		expectedList.add(nodeFifty);
-		expectedList.add(nodeTwo);
 		expectedList.add(nodeThree);
+		expectedList.add(nodeOne);
+		expectedList.add(nodeFour);
+		expectedList.add(nodeTwo);
+		expectedList.add(nodeFifty);
 		expectedList.add(nodeFive);
 
 		BinaryTreePrint.printTree(tree);
@@ -430,6 +232,28 @@ public class BinaryTreeTest {
 		List<Integer> postOrderedList = tree.levelOrder();
 
 		Assertions.assertEquals(expectedList, postOrderedList);
+	}
+
+	@Test
+	public void findMin() {
+		tree.insert(nodeTwo);
+		tree.insert(nodeOne);
+		for (int node : randomNodes) {
+			tree.insert(node);
+		}
+
+		Assertions.assertEquals(nodeOne, tree.findMin());
+	}
+
+	@Test
+	public void findMax() {
+		tree.insert(nodeFour);
+		tree.insert(nodeHundredAndOne);
+		for (int node : randomNodes) {
+			tree.insert(node);
+		}
+
+		Assertions.assertEquals(nodeHundredAndOne, tree.findMax());
 	}
 
 }

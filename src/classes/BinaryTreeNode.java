@@ -1,4 +1,4 @@
-package java;
+package classes;
 
 public class BinaryTreeNode<E> {
 	private E element;

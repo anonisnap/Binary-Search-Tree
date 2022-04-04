@@ -1,4 +1,4 @@
-package java;
+package classes;
 
 import java.util.ArrayList;
 
@@ -65,13 +65,12 @@ public class BinaryTree<E> {
 	}
 
 	public ArrayList<E> levelOrder() {
-		ArrayList<E> l = new ArrayList<>();
-
-		for (int i = 0; i < getHeight(); i++) {
-			levelOrderAddToList(l, root, i);
+		ArrayList<E> list = new ArrayList<>();
+		for (int i = 0; i <= getHeight(); i++) {
+			levelOrderAddToList(list, root, i);
 		}
 
-		return l;
+		return list;
 	}
 
 	private void levelOrderAddToList(ArrayList<E> list, BinaryTreeNode<E> node, int level) {
@@ -113,7 +112,7 @@ public class BinaryTree<E> {
 	}
 
 	private int nodeHeight(BinaryTreeNode<E> node) {
-		if (node == null || node.getLeftChild() == null && node.getRightChild() == null) {
+		if (node == null) {
 			return 0;
 		}
 		return Math.max(nodeHeight(node.getLeftChild()), nodeHeight(node.getRightChild())) + 1;
