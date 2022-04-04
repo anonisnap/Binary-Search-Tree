@@ -1,8 +1,7 @@
 package util;
 
-import data.BinaryTreeNode;
-
-import java.BinarySearchTreeNode;
+import java.BinaryTree;
+import java.BinaryTreeNode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class BinaryTreePrint {
 	// Value determined by Root Node Height. Used to determine the separation distance
 	private static int TREE_HEIGHT;
 	// Simple Dummy Node used to fill in for Null Child Values
-	private final static BinarySearchTreeNode<Integer> DUMMY_NODE = new BinarySearchTreeNode<>(DUMMY_VALUE);
+	private final static BinaryTreeNode<Integer> DUMMY_NODE = new BinaryTreeNode<>(DUMMY_VALUE);
 
 	/**
 	 * <p>
@@ -37,41 +36,36 @@ public class BinaryTreePrint {
 	 * The tree must be created elsewhere (possible in a Main or Test class).
 	 * </p>
 	 *
-	 * @param root [BinaryTreeNode] acting as the Root for a Tree
+	 * @param tree [BinaryTree] to print
 	 */
 
-	public static void printTree(BinarySearchTreeNode root) {
-		ArrayList<BinarySearchTreeNode> parent = new ArrayList<>();
+	public static void printTree(BinaryTree tree) {
+		ArrayList<BinaryTreeNode> parent = new ArrayList<>();
 
-		TREE_HEIGHT = root.getHeight() + Math.max(1, BUFFER_SPACE);
+		TREE_HEIGHT = tree.getHeight() + Math.max(1, BUFFER_SPACE);
 
-		parent.add(root);
+		parent.add(tree.getRoot());
 
 		printTheTree(parent);
 	}
 
-	private static void printTheTree(List<BinarySearchTreeNode> nodeList) {
+	private static void printTheTree(List<BinaryTreeNode> nodeList) {
 		if (TREE_HEIGHT == 0) {
 			return;
 		}
-//		System.out.print("List of Nodes to print: { ");
-//		for (BinaryTreeNode node : nodeList) {
-//			System.out.printf("%3s, ", node.getNodeValue());
-//		}
-//		System.out.println(" }");
 
 		int indent = (int) Math.pow(2, TREE_HEIGHT);
 		TREE_HEIGHT--;
 
 		StringBuilder lineInfoStringBuilder = new StringBuilder();
-		ArrayList<BinarySearchTreeNode> childrenList = new ArrayList<>();
+		ArrayList<BinaryTreeNode> childrenList = new ArrayList<>();
 		for (BinaryTreeNode<Integer> node : nodeList) {
 			childrenList.add(node.getLeftChild() != null ? node.getLeftChild() : DUMMY_NODE);
 			childrenList.add(node.getRightChild() != null ? node.getRightChild() : DUMMY_NODE);
 
 			lineInfoStringBuilder.append(indent(indent))
 			                     .append(String.format("%2s",
-			                                           (node.getNodeValue() == DUMMY_VALUE) ? String.valueOf(MISSING_VALUE) : node.getNodeValue()))
+			                                           (node.getElement() == DUMMY_VALUE) ? String.valueOf(MISSING_VALUE) : node.getElement()))
 			                     .append(indent(indent));
 
 		}
