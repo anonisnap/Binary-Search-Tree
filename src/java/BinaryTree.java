@@ -6,6 +6,10 @@ public class BinaryTree<E> {
 	private BinaryTreeNode<E> root;
 	private int size;
 
+	public BinaryTree(E rootElement) {
+		this.root = new BinaryTreeNode<>(rootElement);
+	}
+
 	public BinaryTreeNode<E> getRoot() {
 		return root;
 	}
